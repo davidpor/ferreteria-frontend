@@ -30,6 +30,24 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Variables de entorno (tienen claves secretas)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache
+.eslintcache
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+EOF
+
 # env files (can opt-in for committing if needed)
 .env*
 
