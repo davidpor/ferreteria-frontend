@@ -12,7 +12,8 @@ const RUTAS_PROTEGIDAS = [
 // Rutas solo para admin/vendedor
 const RUTAS_ADMIN = ['/admin'];
 
-export function middleware(request: NextRequest) {
+//export function middleware(request: NextRequest) {
+  export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('accessToken')?.value
     || request.headers.get('authorization')?.replace('Bearer ', '');
