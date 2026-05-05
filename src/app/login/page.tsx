@@ -44,9 +44,11 @@ export default function LoginPage() {
 
       // Redirige según el rol
       if (usuario.rol === 'admin' || usuario.rol === 'vendedor') {
-        router.push('/admin');
+        //router.push('/admin');
+        window.location.href = '/admin';
       } else {
-        router.push('/catalogo');
+        //router.push('/catalogo');
+        window.location.href = '/catalogo';
       }
     } catch (err: any) {
       const msg = err?.response?.data?.error || 'Error al iniciar sesión';
