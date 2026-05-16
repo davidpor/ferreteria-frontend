@@ -14,23 +14,23 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const addItem    = useCartStore(s => s.addItem);
-  const user       = useAuthStore(s => s.user);
-  const precio     = product.precio_cliente ?? product.precio_lista;
+  const addItem = useCartStore(s => s.addItem);
+  const user = useAuthStore(s => s.user);
+  const precio = product.precio_cliente ?? product.precio_lista;
   const tieneStock = product.stock_actual > 0;
 
   const handleAgregar = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!tieneStock) return;
     addItem({
-      product_id:      product.id,
-      sku:             product.sku,
-      nombre:          product.nombre,
+      product_id: product.id,
+      sku: product.sku,
+      nombre: product.nombre,
       precio_unitario: precio,
-      cantidad:        product.cantidad_minima,
-      unidad_venta:    product.unidad_venta,
+      cantidad: product.cantidad_minima,
+      unidad_venta: product.unidad_venta,
       cantidad_minima: product.cantidad_minima,
-      subtotal:        precio * product.cantidad_minima,
+      subtotal: precio * product.cantidad_minima,
     });
     toast.success(`${product.nombre} agregado al carrito`);
   };
@@ -54,8 +54,15 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         {/* Imagen */}
         <div style={{ position: 'relative', height: '200px', background: 'var(--color-bg-elevated)', overflow: 'hidden' }}>
           {product.imagen_url ? (
-            <img src={product.imagen_url} alt={product.nombre}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img
+              src={
+                product.imagen_url?.startsWith('http')
+                  ? product.imagen_url
+                  : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${product.imagen_url}`
+              }
+              alt={product.nombre}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
           ) : (
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Package size={48} color="var(--color-content-muted)" />
@@ -99,8 +106,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
           {/* Descripción corta */}
           {product.descripcion && (
-            <p style={{ fontSize: '12px', color: 'var(--color-content-secondary)', lineHeight: 1.5, marginBottom: '12px',
-              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p style={{
+              fontSize: '12px', color: 'var(--color-content-secondary)', lineHeight: 1.5, marginBottom: '12px',
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+            }}>
               {product.descripcion}
             </p>
           )}

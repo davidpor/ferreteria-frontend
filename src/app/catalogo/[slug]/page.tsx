@@ -16,15 +16,15 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 export default function ProductoDetallePage() {
-  const { slug }   = useParams<{ slug: string }>();
-  const router     = useRouter();
-  const addItem    = useCartStore(s => s.addItem);
-  const user       = useAuthStore(s => s.user);
+  const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
+  const addItem = useCartStore(s => s.addItem);
+  const user = useAuthStore(s => s.user);
 
-  const [product,  setProduct]  = useState<Product | null>(null);
-  const [loading,  setLoading]  = useState(true);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [cantidad, setCantidad] = useState(1);
-  const [agregando,setAgregando]= useState(false);
+  const [agregando, setAgregando] = useState(false);
 
   useEffect(() => {
     productsApi.getBySlug(slug)
@@ -44,14 +44,14 @@ export default function ProductoDetallePage() {
 
   if (!product) return null;
 
-  const precio     = product.precio_cliente ?? product.precio_lista;
+  const precio = product.precio_cliente ?? product.precio_lista;
   const tieneStock = product.stock_actual > 0;
-  const descuento  = product.precio_cliente && product.precio_cliente < product.precio_lista
+  const descuento = product.precio_cliente && product.precio_cliente < product.precio_lista
     ? Math.round((1 - product.precio_cliente / product.precio_lista) * 100)
     : 0;
 
   const handleCantidad = (delta: number) => {
-    const min  = product.cantidad_minima || 1;
+    const min = product.cantidad_minima || 1;
     const next = cantidad + delta;
     if (next < min) return;
     setCantidad(next);
@@ -62,15 +62,15 @@ export default function ProductoDetallePage() {
     setAgregando(true);
     await new Promise(r => setTimeout(r, 400));
     addItem({
-      product_id:      product.id,
-      sku:             product.sku,
-      nombre:          product.nombre,
+      product_id: product.id,
+      sku: product.sku,
+      nombre: product.nombre,
       precio_unitario: precio,
       cantidad,
-      unidad_venta:    product.unidad_venta,
+      unidad_venta: product.unidad_venta,
       cantidad_minima: product.cantidad_minima,
-      subtotal:        precio * cantidad,
-      imagen_url:      product.imagen_url,
+      subtotal: precio * cantidad,
+      imagen_url: product.imagen_url,
     });
     toast.success(`${product.nombre} agregado al carrito`);
     setAgregando(false);
@@ -112,7 +112,10 @@ export default function ProductoDetallePage() {
               overflow: 'hidden', position: 'relative'
             }}>
               {product.imagen_url ? (
-                <img src={product.imagen_url} alt={product.nombre}
+                <img
+                  src={product.imagen_url?.startsWith('http')
+                    ? product.imagen_url
+                    : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${product.imagen_url}`}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <Package size={96} color="var(--color-content-muted)" />
@@ -247,9 +250,9 @@ export default function ProductoDetallePage() {
             {/* Beneficios */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '0.5rem', borderTop: '1px solid var(--color-border)' }}>
               {[
-                { icon: Truck,   text: 'Envío directo a obra en toda la provincia' },
-                { icon: Shield,  text: 'Garantía del fabricante incluida'           },
-                { icon: Package, text: 'Stock garantizado para pedidos mayoristas'  },
+                { icon: Truck, text: 'Envío directo a obra en toda la provincia' },
+                { icon: Shield, text: 'Garantía del fabricante incluida' },
+                { icon: Package, text: 'Stock garantizado para pedidos mayoristas' },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Icon size={16} color="var(--color-brand)" />
@@ -279,13 +282,13 @@ export default function ProductoDetallePage() {
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0' }}>
             {[
-              { label: 'SKU',           value: product.sku                },
-              { label: 'Marca',         value: product.marca || '—'       },
-              { label: 'Unidad venta',  value: product.unidad_venta       },
-              { label: 'Contenido',     value: `${product.contenido_por_unidad} unid.` },
-              { label: 'Cant. mínima',  value: `${product.cantidad_minima} ${product.unidad_venta}` },
-              { label: 'Stock actual',  value: `${product.stock_actual} unid.` },
-              ...(product.peso_kg  ? [{ label: 'Peso',    value: `${product.peso_kg} kg` }] : []),
+              { label: 'SKU', value: product.sku },
+              { label: 'Marca', value: product.marca || '—' },
+              { label: 'Unidad venta', value: product.unidad_venta },
+              { label: 'Contenido', value: `${product.contenido_por_unidad} unid.` },
+              { label: 'Cant. mínima', value: `${product.cantidad_minima} ${product.unidad_venta}` },
+              { label: 'Stock actual', value: `${product.stock_actual} unid.` },
+              ...(product.peso_kg ? [{ label: 'Peso', value: `${product.peso_kg} kg` }] : []),
               ...(product.categoria ? [{ label: 'Categoría', value: product.categoria.nombre }] : []),
             ].map(({ label, value }, i) => (
               <div key={label} style={{

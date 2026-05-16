@@ -108,7 +108,7 @@ function PedidosContent() {
                         {order.metodo_pago?.replace('_', ' ')}
                         {order.numero_remito && <span style={{ marginLeft: '8px', color: 'var(--color-content-muted)' }}>· Remito: {order.numero_remito}</span>}
                       </p>
-                    </div>
+                    </div>q.
 
                     {/* Total */}
                     <div style={{ textAlign: 'right', minWidth: '120px' }}>
