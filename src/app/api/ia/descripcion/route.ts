@@ -3,44 +3,53 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { nombre, sku, marca, categoria } = await req.json();
+    const body = await req.json();
+    const { nombre, sku, marca, categoria } = body;
 
-    const prompt = `Generá una descripción técnica profesional para el siguiente producto de ferretería mayorista:
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      console.error('[IA] ANTHROPIC_API_KEY no configurada');
+      return NextResponse.json({ error: 'API key no configurada' }, { status: 500 });
+    }
 
+    console.log('[IA] Generando descripción para:', nombre, sku);
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type':      'application/json',
+        'x-api-key':         apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model:      'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{
+          role:    'user',
+          content: `Generá una descripción técnica profesional de 60-100 palabras para este producto de ferretería mayorista:
 Nombre: ${nombre}
 SKU: ${sku}
 ${marca ? `Marca: ${marca}` : ''}
 ${categoria ? `Categoría: ${categoria}` : ''}
 
-La descripción debe:
-- Tener entre 60 y 120 palabras
-- Destacar las características técnicas más importantes
-- Usar lenguaje profesional y técnico
-- Ser útil para compradores mayoristas (constructoras, ferreterías)
-- No incluir precio ni disponibilidad
-- Estar en español argentino
-
-Respondé SOLO con la descripción, sin títulos ni explicaciones adicionales.`;
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':         'application/json',
-        'x-api-key':            process.env.ANTHROPIC_API_KEY || '',
-        'anthropic-version':    '2023-06-01',
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages:   [{ role: 'user', content: prompt }],
+Solo la descripción, en español argentino, sin títulos.`,
+        }],
       }),
     });
 
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('[IA] Error Anthropic:', res.status, errText);
+      return NextResponse.json({ error: `Error API: ${res.status}` }, { status: 500 });
+    }
+
     const data = await res.json();
     const descripcion = data.content?.[0]?.text?.trim() || '';
+    console.log('[IA] Descripción generada OK, chars:', descripcion.length);
 
     return NextResponse.json({ descripcion });
-  } catch (err) {
-    return NextResponse.json({ error: 'Error al generar descripción' }, { status: 500 });
+  } catch (err: any) {
+    console.error('[IA] Error:', err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

@@ -17,8 +17,12 @@ export const formatPrice = (value: number | string): string => {
 };
 
 // Formatea fechas en español
-export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('es-AR', {
+// Reemplazás la función formatDate en src/lib/utils.ts
+export const formatDate = (dateString: string | undefined | null): string => {
+  if (!dateString) return '—';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('es-AR', {
     day:   '2-digit',
     month: '2-digit',
     year:  'numeric',
