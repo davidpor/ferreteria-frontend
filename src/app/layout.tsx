@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import { Header } from '@/components/layout/Header';
+import { Chatbot } from '@/components/ai/Chatbot';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={{ margin: 0, backgroundColor: '#0A0A0A' }}>
         <Header />
         <main>{children}</main>
+        <Chatbot />
         <Toaster
           position="top-right"
           toastOptions={{
