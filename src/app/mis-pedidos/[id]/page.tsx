@@ -16,10 +16,10 @@ import toast from 'react-hot-toast';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 const STEPS = [
-  { key: 'confirmado',     label: 'Confirmado',     icon: CheckCircle2 },
+  { key: 'confirmado', label: 'Confirmado', icon: CheckCircle2 },
   { key: 'en_preparacion', label: 'En preparación', icon: Package },
-  { key: 'despachado',     label: 'Despachado',     icon: Truck },
-  { key: 'entregado',      label: 'Entregado',      icon: CheckCircle2 },
+  { key: 'despachado', label: 'Despachado', icon: Truck },
+  { key: 'entregado', label: 'Entregado', icon: CheckCircle2 },
 ];
 
 const STEP_INDEX: Record<string, number> = {
@@ -27,9 +27,9 @@ const STEP_INDEX: Record<string, number> = {
 };
 
 function DetalleContent() {
-  const { id }   = useParams<{ id: string }>();
-  const router   = useRouter();
-  const [order,   setOrder]   = useState<Order | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [pagando, setPagando] = useState(false);
 
@@ -45,7 +45,14 @@ function DetalleContent() {
     setPagando(true);
     try {
       const res = await paymentsApi.createPreference(order.id);
-      window.location.href = res.data.init_point || res.data.sandbox_url;
+
+      // Usamos sandbox_url en desarrollo, init_point en producción
+      const url = process.env.NODE_ENV === 'production'
+        ? res.data.init_point
+        : res.data.sandbox_url;
+
+      window.location.href = url;
+
     } catch (err: any) {
       toast.error(err?.response?.data?.error || 'Error al iniciar pago');
       setPagando(false);
@@ -81,9 +88,9 @@ function DetalleContent() {
             <h3 style={{ fontWeight: 700, color: '#fff', fontSize: '15px', marginBottom: '1.5rem' }}>Estado del pedido</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
               {STEPS.map((step, i) => {
-                const done    = i <= stepIdx;
+                const done = i <= stepIdx;
                 const current = i === stepIdx;
-                const Icon    = step.icon;
+                const Icon = step.icon;
                 return (
                   <div key={step.key} style={{ display: 'flex', alignItems: 'center', flex: i < STEPS.length - 1 ? 1 : 0 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -211,9 +218,9 @@ function DetalleContent() {
               <h3 style={{ fontWeight: 700, color: '#fff', fontSize: '15px', marginBottom: '1rem' }}>Información</h3>
               {[
                 { icon: CreditCard, label: 'Método de pago', value: order.metodo_pago?.replace(/_/g, ' ') },
-                { icon: MapPin,     label: 'Dirección',      value: order.direccion_entrega || 'A coordinar' },
-                { icon: FileText,   label: 'Remito',         value: order.numero_remito || '—' },
-                { icon: FileText,   label: 'Factura',        value: order.numero_factura || '—' },
+                { icon: MapPin, label: 'Dirección', value: order.direccion_entrega || 'A coordinar' },
+                { icon: FileText, label: 'Remito', value: order.numero_remito || '—' },
+                { icon: FileText, label: 'Factura', value: order.numero_factura || '—' },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
                   <Icon size={15} color="var(--color-brand)" style={{ flexShrink: 0, marginTop: '2px' }} />

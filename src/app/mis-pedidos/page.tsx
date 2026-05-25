@@ -10,23 +10,23 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import toast from 'react-hot-toast';
 
 const ESTADO_CFG: Record<string, { label: string; color: string; step: number }> = {
-  confirmado:     { label: 'Confirmado',     color: '#3B82F6', step: 1 },
+  confirmado: { label: 'Confirmado', color: '#3B82F6', step: 1 },
   en_preparacion: { label: 'En preparación', color: '#F59E0B', step: 2 },
-  despachado:     { label: 'Despachado',     color: '#8B5CF6', step: 3 },
-  entregado:      { label: 'Entregado',      color: '#22C55E', step: 4 },
-  cancelado:      { label: 'Cancelado',      color: '#EF4444', step: 0 },
+  despachado: { label: 'Despachado', color: '#8B5CF6', step: 3 },
+  entregado: { label: 'Entregado', color: '#22C55E', step: 4 },
+  cancelado: { label: 'Cancelado', color: '#EF4444', step: 0 },
 };
 
 const PAGO_CFG: Record<string, { label: string; color: string }> = {
   pendiente: { label: 'Pago pendiente', color: '#F59E0B' },
-  pagado:    { label: 'Pagado',         color: '#22C55E' },
-  parcial:   { label: 'Pago parcial',   color: '#F97316' },
+  pagado: { label: 'Pagado', color: '#22C55E' },
+  parcial: { label: 'Pago parcial', color: '#F97316' },
 };
 
 function PedidosContent() {
-  const [orders,  setOrders]  = useState<Order[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtro,  setFiltro]  = useState('todos');
+  const [filtro, setFiltro] = useState('todos');
 
   useEffect(() => {
     ordersApi.list(filtro !== 'todos' ? { estado: filtro } : {})
@@ -36,11 +36,11 @@ function PedidosContent() {
   }, [filtro]);
 
   const filtros = [
-    { value: 'todos',          label: 'Todos' },
-    { value: 'confirmado',     label: 'Confirmados' },
+    { value: 'todos', label: 'Todos' },
+    { value: 'confirmado', label: 'Confirmados' },
     { value: 'en_preparacion', label: 'En preparación' },
-    { value: 'despachado',     label: 'Despachados' },
-    { value: 'entregado',      label: 'Entregados' },
+    { value: 'despachado', label: 'Despachados' },
+    { value: 'entregado', label: 'Entregados' },
   ];
 
   return (
@@ -78,7 +78,7 @@ function PedidosContent() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {orders.map(order => {
-              const cfg  = ESTADO_CFG[order.estado];
+              const cfg = ESTADO_CFG[order.estado];
               const pago = PAGO_CFG[order.estado_pago];
               return (
                 <Link key={order.id} href={`/mis-pedidos/${order.id}`} style={{ textDecoration: 'none' }}>
